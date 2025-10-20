@@ -3,6 +3,7 @@ trigger:
 
 pool: Default # Agent is running on a machine on prem 
 
+
 variables:
   HTTP_PROXY: "http://127.0.0.1:8888"
   HTTPS_PROXY: "http://127.0.0.1:8888"   # use http:// even for HTTPS proxy values (common convention)
@@ -15,12 +16,25 @@ stages:
   - stage: 'DownloadAndPublish'
     displayName: 'Download, push and update unified agent'
     jobs:
-    - job: 'DownloadAndPublish'
-      steps:      
-      - task: JfrogCliV2@1
-        name: jfStep
-        inputs:
-          jfrogPlatformConnection: 'JFrog Platform connexion'
-          command: |            
-            jf rt ping
-        continueOnError: true
+      - job: 'DownloadAndPublish'
+        steps:
+          # 1️⃣ Check proxy environment variables
+          - script: |
+              echo "Proxy variables:"
+              env | grep -i proxy
+            displayName: "Check proxy variables"
+
+          # 2️⃣ Test proxy reachability via curl
+          - script: |
+              echo "Testing proxy reachability..."
+              curl -v https://elinaf.jfrog.io/artifactory/api/system/ping
+            displayName: 'Test Proxy via curl'
+
+          # 3️⃣ Your existing JFrog CLI task
+          - task: JfrogCliV2@1
+            name: jfStep
+            inputs:
+              jfrogPlatformConnection: 'JFrog Platform connexion'
+              command: |
+                jf rt ping
+            continueOnError: true
