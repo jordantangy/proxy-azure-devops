@@ -1,0 +1,24 @@
+trigger:
+- main
+
+pool: Default # Agent is running on a machine on prem 
+
+variables:
+  HTTP_PROXY: "https://serviceproxy.se.shb.biz:8100"
+  HTTPS_PROXY: "https://serviceproxy.se.shb.biz:8100"
+  system.debug: true     
+  JFROG_CLI_LOG_LEVEL: DEBUG
+
+stages:
+  - stage: 'DownloadAndPublish'
+    displayName: 'Download, push and update unified agent'
+    jobs:
+    - job: 'DownloadAndPublish'
+      steps:      
+      - task: JfrogCliV2@1
+        name: jfStep
+        inputs:
+          jfrogPlatformConnection: 'JFrog Platform connexion'
+          command: |            
+            jf rt ping
+        continueOnError: true
