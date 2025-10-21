@@ -1,40 +1,45 @@
 trigger:
 - main
 
-pool: Default # Agent is running on a machine on prem 
-
+pool:
+  name: Default  # Agent is running on-prem
 
 variables:
   HTTP_PROXY: "http://127.0.0.1:8888"
-  HTTPS_PROXY: "http://127.0.0.1:8888"   # use http:// even for HTTPS proxy values (common convention)
+  HTTPS_PROXY: "http://127.0.0.1:8888"   # use http:// even for HTTPS proxy values
   NO_PROXY: "127.0.0.1,localhost,::1"
   system.debug: true
   JFROG_CLI_LOG_LEVEL: DEBUG
 
+steps:
+- task: JfrogCliV2@1
+  inputs:
+    jfrogPlatformConnection: 'elina-openid'
+    command: 'jf rt ping'
+  # - stage: 'DownloadAndPublish'
+  #   displayName: 'Download, push and update unified agent'
+  #   jobs:
+  #     - job: 'DownloadAndPublish'
+  #       steps:
+  #         # 1️⃣ Check proxy environment variables
+  #         - script: |
+  #             echo "Proxy variables:"
+  #             env | grep -i proxy
+  #           displayName: "Check proxy variables"
 
-stages:
-  - stage: 'DownloadAndPublish'
-    displayName: 'Download, push and update unified agent'
-    jobs:
-      - job: 'DownloadAndPublish'
-        steps:
-          # 1️⃣ Check proxy environment variables
-          - script: |
-              echo "Proxy variables:"
-              env | grep -i proxy
-            displayName: "Check proxy variables"
+  #         # 2️⃣ Test proxy reachability via curl
+  #         - script: |
+  #             echo "Testing proxy reachability..."
+  #             curl -v https://elinaf.jfrog.io/artifactory/api/system/ping
+  #           displayName: 'Test Proxy via curl'
 
-          # 2️⃣ Test proxy reachability via curl
-          - script: |
-              echo "Testing proxy reachability..."
-              curl -v https://elinaf.jfrog.io/artifactory/api/system/ping
-            displayName: 'Test Proxy via curl'
+  #         # 3️⃣ Your existing JFrog CLI task
+  #         - task: JfrogCliV2@1
+  #           name: jfStep
+  #           inputs:
+  #             jfrogPlatformConnection: 'JFrog Platform connexion'
+  #             command: |
+  #               jf rt ping
+  #           continueOnError: true
 
-          # 3️⃣ Your existing JFrog CLI task
-          - task: JfrogCliV2@1
-            name: jfStep
-            inputs:
-              jfrogPlatformConnection: 'JFrog Platform connexion'
-              command: |
-                jf rt ping
-            continueOnError: true
+            
