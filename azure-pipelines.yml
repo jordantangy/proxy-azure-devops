@@ -8,7 +8,7 @@ variables:
   # HTTP_PROXY: "http://127.0.0.1:8888"
   # HTTPS_PROXY: "http://127.0.0.1:8888"   # use http:// even for HTTPS proxy values
   # NO_PROXY: "127.0.0.1,localhost,::1"
-  # system.debug: true
+  system.debug: true
   JFROG_CLI_LOG_LEVEL: DEBUG
 
 steps:
